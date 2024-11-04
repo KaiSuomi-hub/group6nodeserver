@@ -2,7 +2,7 @@
 
 P2P-webrtc chat with local and network encryption.
 
-Node.js server
+Mobile App
 https://github.com/KaiSuomi-hub/group6mobileproject
 
 See the flowchart at:

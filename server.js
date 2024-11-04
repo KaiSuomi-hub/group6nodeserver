@@ -14,8 +14,8 @@ const fs = require("fs");
  * @property {Buffer} cert - The certificate for SSL, read from the file system.
  */
 const sslOptions = {
-    key: fs.readFileSync("./privatekey.pem"),
-    cert: fs.readFileSync("./certificate.pem"),
+    key: fs.readFileSync("./cert/privatekey.pem"),
+    cert: fs.readFileSync("./cert/certificate.pem"),
   };
 
 const app = express();
@@ -72,5 +72,3 @@ io.on("connection", socket => {
 
 
 server.listen(port, () => console.log('server is running on port 9000'));
-
-
