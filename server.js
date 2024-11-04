@@ -14,8 +14,8 @@ const fs = require("fs");
  * @property {Buffer} cert - The certificate for SSL, read from the file system.
  */
 const sslOptions = {
-    key: fs.readFileSync("/etc/secrets/privatekey.pem"),
-    cert: fs.readFileSync("/etc/secrets/certificate.pem"),
+    key: fs.readFileSync("privatekey.pem"),
+    cert: fs.readFileSync("certificate.pem"),
 };
 /* sslOptions point to etc secrets folder where the private key and certificate are stored in Render
 For local development, change the path to the location of the private key and certificate on your machine.
