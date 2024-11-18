@@ -2,14 +2,21 @@ const express = require("express");
 const http = require("https");
 const fs = require("fs");
 const { readData, writeData } = require("./dataManager");
+require('dotenv').config();  // Lataa ympäristömuuttujat
 
-const sslOptions = {
-    key: fs.readFileSync("privatekey.pem"),
-    cert: fs.readFileSync("certificate.pem"),
-};
+// kommentoi nämä mikäli haluat testata ilman SSL:ää
+//const sslOptions = {
+//    key: fs.readFileSync("privatekey.pem"),
+//   cert: fs.readFileSync("certificate.pem"),
+//};
 
 const app = express();
-const server = http.createServer(sslOptions, app);
+
+// Käytä tätä vaihtoehtoa **ilman SSL:ää** testaustarkoitukseen:
+const server = http.createServer(app);  // Tämä luo palvelimen ilman SSL:ää
+
+//const server = http.createServer(sslOptions, app);  // Tämä käyttää SSL:ää
+
 const socket = require("socket.io");
 const io = socket(server);
 
@@ -75,4 +82,5 @@ io.on("connection", (socket) => {
     });
 });
 
+// Käynnistetään palvelin
 server.listen(port, () => console.log("Server is running on port 9000"));
