@@ -1,49 +1,56 @@
 const express = require("express");
-const http = require("https");
+const http = require("http"); // Muutettu https:sta http:ksi
 const fs = require("fs");
-const { readData, writeData } = require("./dataManager");
-require('dotenv').config();  // Lataa ympäristömuuttujat
+const socket = require("socket.io");
+const { registerUser, loginUser } = require("./userController"); // Käyttäjähallinta
+const { createRoom, joinRoom } = require("./roomController"); // Huoneenhallinta
 
-// kommentoi nämä mikäli haluat testata ilman SSL:ää
-//const sslOptions = {
-//    key: fs.readFileSync("privatekey.pem"),
-//   cert: fs.readFileSync("certificate.pem"),
-//};
+require("dotenv").config();
+
+// SSL-konfiguraatio (kommentoitu pois paikallista kehitystä varten)
+// const sslOptions = {
+//     key: fs.readFileSync("privatekey.pem"),
+//     cert: fs.readFileSync("certificate.pem"),
+// };
 
 const app = express();
 
-// Käytä tätä vaihtoehtoa **ilman SSL:ää** testaustarkoitukseen:
-const server = http.createServer(app);  // Tämä luo palvelimen ilman SSL:ää
+// Käytetään HTTP:ta ilman SSL:ää paikallisessa kehityksessä
+// Jos haluat käyttää SSL:ää, käytä https.createServer(sslOptions, app)
+// const server = http.createServer(sslOptions, app);  // SSL version
+const server = http.createServer(app); // HTTP version ilman SSL:ää
 
-//const server = http.createServer(sslOptions, app);  // Tämä käyttää SSL:ää
-
-const socket = require("socket.io");
+// Alustetaan io (Socket.IO)
 const io = socket(server);
+
+// Middleware JSON-pyyntöjen käsittelyyn
+app.use(express.json());
 
 const port = process.env.PORT || 9000;
 
-let data = readData();  // Ladataan tiedot tiedostosta
+// Käyttäjänhallinnan REST API
+app.post("/register", registerUser);
+app.post("/login", loginUser);
+
+// Huoneenhallinnan REST API
+app.post("/create-room", createRoom);
+
+// Socket.IO Signaling WebRTC
+const rooms = {};
 
 io.on("connection", (socket) => {
     console.log("Connected");
 
-    // Lisätään käyttäjä
-    data.users[socket.id] = { username: `User_${socket.id}` };
-    writeData(data); // Tallennetaan tiedot
-
     socket.on("join room", (roomID) => {
         console.log("Join room fired", roomID);
-
-        // Lisätään käyttäjä huoneeseen
-        if (data.rooms[roomID]) {
-            data.rooms[roomID].push(socket.id);
+        if (rooms[roomID]) {
+            console.log("Push");
+            rooms[roomID].push(socket.id);
         } else {
-            data.rooms[roomID] = [socket.id];
+            console.log("Create");
+            rooms[roomID] = [socket.id];
         }
-        writeData(data); // Tallennetaan tiedot
-
-        // Etsitään toinen käyttäjä huoneessa ja ilmoitetaan
-        const otherUser = data.rooms[roomID].find((id) => id !== socket.id);
+        const otherUser = rooms[roomID].find((id) => id !== socket.id);
         if (otherUser) {
             console.log("Other user fired and user joined fired");
             socket.emit("other user", otherUser);
@@ -51,36 +58,20 @@ io.on("connection", (socket) => {
         }
     });
 
-    // WebRTC-signalisointi
     socket.on("offer", (payload) => {
+        console.log("Offer fired", payload);
         io.to(payload.target).emit("offer", payload);
     });
 
     socket.on("answer", (payload) => {
+        console.log("Answer fired", payload);
         io.to(payload.target).emit("answer", payload);
     });
 
     socket.on("ice-candidate", (incoming) => {
+        console.log("Ice candidate fired");
         io.to(incoming.target).emit("ice-candidate", incoming.candidate);
-    });
-
-    // Poistetaan käyttäjä huoneista ja tietokannasta yhteyden katkaisemisen yhteydessä
-    socket.on("disconnect", () => {
-        console.log("Disconnected");
-
-        // Poistetaan käyttäjä kaikista huoneista
-        for (const roomID of Object.keys(data.rooms)) {
-            data.rooms[roomID] = data.rooms[roomID].filter(id => id !== socket.id);
-            if (data.rooms[roomID].length === 0) {
-                delete data.rooms[roomID]; // Poistetaan huone, jos siinä ei ole enää käyttäjiä
-            }
-        }
-
-        // Poistetaan käyttäjä käyttäjistä
-        delete data.users[socket.id];
-        writeData(data); // Tallennetaan tiedot
     });
 });
 
-// Käynnistetään palvelin
-server.listen(port, () => console.log("Server is running on port 9000"));
+server.listen(port, () => console.log(`Server is running on port ${port}`));
