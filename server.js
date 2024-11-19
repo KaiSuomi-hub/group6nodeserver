@@ -1,26 +1,30 @@
 const express = require("express");
-const http = require("http"); // Muutettu https:sta http:ksi
+const http = require("http");
 const fs = require("fs");
 const socket = require("socket.io");
 const { registerUser, loginUser } = require("./userController"); // Käyttäjähallinta
 const { createRoom, joinRoom } = require("./roomController"); // Huoneenhallinta
+const cors = require('cors');
+
+// Luo Express sovellus
+const app = express();
+
+// Enable CORS (Cross-Origin Resource Sharing) ennen muiden middlewarejen määrittelyä
+app.use(cors());
 
 require("dotenv").config();
 
 // SSL-konfiguraatio (kommentoitu pois paikallista kehitystä varten)
-// const sslOptions = {
-//     key: fs.readFileSync("privatekey.pem"),
-//     cert: fs.readFileSync("certificate.pem"),
-// };
+//const sslOptions = {
+//   key: fs.readFileSync("privatekey.pem"),  // Tässä tulee olla oikea tiedosto polku
+//    cert: fs.readFileSync("certificate.pem"), // Tässä tulee olla oikea tiedosto polku
+//};
 
-const app = express();
-
-// Käytetään HTTP:ta ilman SSL:ää paikallisessa kehityksessä
-// Jos haluat käyttää SSL:ää, käytä https.createServer(sslOptions, app)
-// const server = http.createServer(sslOptions, app);  // SSL version
+// Jos haluat käyttää SSL:ää, käytä seuraavaa
+// const server = https.createServer(sslOptions, app);  // SSL version
 const server = http.createServer(app); // HTTP version ilman SSL:ää
 
-// Alustetaan io (Socket.IO)
+// Alustetaan Socket.IO
 const io = socket(server);
 
 // Middleware JSON-pyyntöjen käsittelyyn
@@ -28,11 +32,11 @@ app.use(express.json());
 
 const port = process.env.PORT || 9000;
 
-// Käyttäjänhallinnan REST API
-app.post("/register", registerUser);
-app.post("/login", loginUser);
+// Käyttäjänhallinnan reitit
+app.post(["/register", "/api/register"], registerUser);
+app.post(["/login", "/api/login"], loginUser);
 
-// Huoneenhallinnan REST API
+// Huoneenhallinnan reitit
 app.post("/create-room", createRoom);
 
 // Socket.IO Signaling WebRTC
@@ -74,4 +78,7 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+// Käynnistetään serveri
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
