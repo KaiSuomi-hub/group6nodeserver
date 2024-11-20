@@ -9,15 +9,15 @@ const cors = require('cors');
 // Luo Express sovellus
 const app = express();
 
-// Enable CORS (Cross-Origin Resource Sharing) ennen muiden middlewarejen määrittelyä
+// Enable CORS (Cross-Origin Resource Sharing)
 app.use(cors());
 
 require("dotenv").config();
 
 // SSL-konfiguraatio (kommentoitu pois paikallista kehitystä varten)
 //const sslOptions = {
-//   key: fs.readFileSync("privatekey.pem"),  // Tässä tulee olla oikea tiedosto polku
-//    cert: fs.readFileSync("certificate.pem"), // Tässä tulee olla oikea tiedosto polku
+//   key: fs.readFileSync("privatekey.pem"),
+//    cert: fs.readFileSync("certificate.pem"),
 //};
 
 // Jos haluat käyttää SSL:ää, käytä seuraavaa

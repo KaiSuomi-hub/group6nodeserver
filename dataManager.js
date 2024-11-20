@@ -65,7 +65,7 @@ const createUser = async (username, password) => {
     }
 
     // Salataan salasana
-    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex'); // Voit käyttää esimerkiksi bcryptia turvallisemman salauksen luomiseksi
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
     // Lisätään uusi käyttäjä
     data.users[username] = { password: hashedPassword };
@@ -83,7 +83,7 @@ const authenticateUser = async (username, password) => {
         return false;
     }
 
-    // Verrataan salasanaa (täällä käytämme sha256, mutta suosittelen bcryptia salasanan tarkistamiseen)
+    // Verrataan salasanaa
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
     
     // Verrataan tallennettua salasanaa ja käyttäjän antamaa salasanaa
