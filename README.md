@@ -1,7 +1,7 @@
 # group6:mobile project
 
 P2P-webrtc chat with local and network encryption.
-This server repo is rendered from main-branch to https://group6nodeserver.onrender.com
+This server repo is rendered from main-branch to [https://group6nodeserver.onrender.com](https://group6nodeserver.onrender.com:10000/)
 
 Mobile App
 https://github.com/KaiSuomi-hub/group6mobileproject
