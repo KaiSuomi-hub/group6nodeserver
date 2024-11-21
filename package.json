@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "mocha --reporter spec",
-    "start": "set HTTPS=true&&node server.js"
+    "start": "set SSL_ENABLED=true&&node server.js"
   },
   "repository": {
     "type": "git",
