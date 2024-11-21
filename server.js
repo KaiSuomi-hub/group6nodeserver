@@ -1,12 +1,12 @@
 const express = require("express");
 const http = require("http");
+const https = require("https");
 const fs = require("fs");
 const socket = require("socket.io");
 const { registerUser, loginUser } = require("./userController"); // Käyttäjähallinta
 const { createRoom, joinRoom } = require("./roomController"); // Huoneenhallinta
 const cors = require('cors');
 
-// Luo Express sovellus
 const app = express();
 
 // Enable CORS (Cross-Origin Resource Sharing)
@@ -14,15 +14,16 @@ app.use(cors());
 
 require("dotenv").config();
 
-// SSL-konfiguraatio (kommentoitu pois paikallista kehitystä varten)
-//const sslOptions = {
-//   key: fs.readFileSync("privatekey.pem"),
-//    cert: fs.readFileSync("certificate.pem"),
-//};
+// SSL-konfiguraatio (vain jos käytetään omaa sertifikaattia)
+const sslOptions = process.env.SSL_ENABLED === 'true' ? {
+  key: fs.readFileSync("privatekey.pem"),
+  cert: fs.readFileSync("certificate.pem"),
+} : {};
 
-// Jos haluat käyttää SSL:ää, käytä seuraavaa
-// const server = https.createServer(sslOptions, app);  // SSL version
-const server = http.createServer(app); // HTTP version ilman SSL:ää
+// Jos käytetään Renderin tarjoamaa HTTPS:ää, tämä osa voi olla tarpeeton
+const server = sslOptions.key && sslOptions.cert ? 
+  https.createServer(sslOptions, app) : 
+  http.createServer(app); // Jos SSL ei ole käytössä, käytetään HTTP:tä
 
 // Alustetaan Socket.IO
 const io = socket(server);
