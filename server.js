@@ -21,8 +21,8 @@ const sslOptions = process.env.SSL_ENABLED === 'true' ? {
 } : {};
 
 // Jos käytetään Renderin tarjoamaa HTTPS:ää, tämä osa voi olla tarpeeton
-const server = sslOptions.key && sslOptions.cert ? 
-  https.createServer(sslOptions, app) : 
+const server = sslOptions.key && sslOptions.cert ?
+  https.createServer(sslOptions, app) :
   http.createServer(app); // Jos SSL ei ole käytössä, käytetään HTTP:tä
 
 // Alustetaan Socket.IO
@@ -31,7 +31,7 @@ const io = socket(server);
 // Middleware JSON-pyyntöjen käsittelyyn
 app.use(express.json());
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT;
 
 // Käyttäjänhallinnan reitit
 app.post(["/register", "/api/register"], registerUser);
