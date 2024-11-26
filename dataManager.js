@@ -42,7 +42,7 @@ const writeData = (data) => {
     try {
         const iv = crypto.randomBytes(IV_LENGTH); // Luodaan satunnainen IV
         const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY, "hex"), iv);
-        
+
         let encrypted = cipher.update(JSON.stringify(data), "utf8", "hex");
         encrypted += cipher.final("hex");
 
@@ -72,6 +72,8 @@ const createUser = async (username, password) => {
 
     // Tallennetaan data
     writeData(data);
+    //remove after debugged
+    console.log("User created");
 };
 
 // Funktio käyttäjän tunnistamiseen
@@ -85,9 +87,10 @@ const authenticateUser = async (username, password) => {
 
     // Verrataan salasanaa
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-    
+
     // Verrataan tallennettua salasanaa ja käyttäjän antamaa salasanaa
     return data.users[username].password === hashedPassword;
+    console.log("User recognized");
 };
 
 // Funktio huoneen luomiseen
