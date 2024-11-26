@@ -4,7 +4,7 @@ const https = require("https");
 const fs = require("fs");
 const socket = require("socket.io");
 const { registerUser, loginUser } = require("./userController"); // Käyttäjähallinta
-const { createRoom, joinRoom } = require("./roomController"); // Huoneenhallinta
+const { createRoom, listRooms } = require("./roomController"); // Huoneenhallinta
 const cors = require('cors');
 
 const app = express();
@@ -14,7 +14,7 @@ app.use(cors());
 
 require("dotenv").config();
 
-// SSL-konfiguraatio (vain jos käytetään omaa sertifikaattia)
+SSL-konfiguraatio //(vain jos käytetään omaa sertifikaattia)
 const sslOptions = process.env.SSL_ENABLED === 'true' ? {
   key: fs.readFileSync("privatekey.pem"),
   cert: fs.readFileSync("certificate.pem"),
@@ -24,6 +24,9 @@ const sslOptions = process.env.SSL_ENABLED === 'true' ? {
 const server = sslOptions.key && sslOptions.cert ? 
   https.createServer(sslOptions, app) : 
   http.createServer(app); // Jos SSL ei ole käytössä, käytetään HTTP:tä
+
+//paikallinen testaus
+//const server = http.createServer(app);
 
 // Alustetaan Socket.IO
 const io = socket(server);
@@ -39,6 +42,7 @@ app.post(["/login", "/api/login"], loginUser);
 
 // Huoneenhallinnan reitit
 app.post("/create-room", createRoom);
+app.get("/rooms", listRooms);  // Reitti huoneiden listaamiseen
 
 // Socket.IO Signaling WebRTC
 const rooms = {};
