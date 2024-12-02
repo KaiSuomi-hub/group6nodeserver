@@ -93,4 +93,52 @@ const authenticateUser = async (username, password) => {
     console.log("User recognized");
 };
 
-module.exports = { readData, writeData, createUser, authenticateUser };
+// Funktio huoneen luomiseen
+const createRoom = (roomID) => {
+    const data = readData(); // Lataa tiedot
+
+    // Tarkistetaan, onko huone jo olemassa
+    if (data.rooms.some(room => room.id === roomID)) {
+        throw new Error('Room already exists.');
+    }
+
+    // Luo uusi huone
+    const newRoom = {
+        id: roomID,
+        users: []  // Aluksi huoneessa ei ole käyttäjiä
+    };
+    data.rooms.push(newRoom);  // Lisää huone listaan
+
+    // Tallennetaan data
+    writeData(data);
+};
+
+// Funktio liittymiseen huoneeseen
+const joinRoom = (roomID, username) => {
+    const data = readData(); // Lataa tiedot
+
+    // Tarkistetaan, onko huone olemassa
+    const room = data.rooms.find(r => r.id === roomID);
+    if (!room) {
+        throw new Error('Room does not exist.');
+    }
+
+    // Tarkistetaan, onko käyttäjä jo huoneessa
+    if (room.users.includes(username)) {
+        throw new Error('User already in room.');
+    }
+
+    // Lisää käyttäjä huoneeseen
+    room.users.push(username);
+
+    // Tallennetaan data
+    writeData(data);
+};
+
+// Funktio huoneiden listaamiseen
+const getRooms = () => {
+    const data = readData(); // Lataa tiedot
+    return data.rooms;  // Palautetaan huoneet
+};
+
+module.exports = { readData, writeData, createUser, authenticateUser, createRoom, joinRoom, getRooms };
