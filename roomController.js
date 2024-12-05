@@ -34,9 +34,9 @@ const createRoom = async (req, res) => {
 const listRooms = async (req, res) => {
     try {
         const data = readData(); // Lataa nykyinen data
-        return res.status(200).json(data.rooms); // Palautetaan huoneiden lista
+        return res.status(200).json({ rooms: data.rooms || [] }); // Palautetaan huoneet oikeassa muodossa
     } catch (error) {
-        console.error(error); // Virheiden tulostus
+        console.error('Error fetching rooms:', error);
         return res.status(500).json({ error: 'Virhe huoneiden hakemisessa.' });
     }
 };
