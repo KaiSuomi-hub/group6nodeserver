@@ -20,10 +20,10 @@ const sslOptions = process.env.SSL_ENABLED === 'true' ? {
   cert: fs.readFileSync("certificate.pem"),
 } : {};
 
-// Jos käytetään Renderin tarjoamaa HTTPS:ää, tämä osa voi olla tarpeeton
-const server = sslOptions.key && sslOptions.cert ?
-  https.createServer(sslOptions, app) :
-  http.createServer(app); // Jos SSL ei ole käytössä, käytetään HTTP:tä
+//Jos käytetään Renderin tarjoamaa HTTPS:ää, tämä osa voi olla tarpeeton
+const server = sslOptions.key && sslOptions.cert ? 
+https.createServer(sslOptions, app) : 
+http.createServer(app); // Jos SSL ei ole käytössä, käytetään HTTP:tä
 
 //paikallinen testaus
 //const server = http.createServer(app);
