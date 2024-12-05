@@ -34,7 +34,7 @@ const io = socket(server);
 // Middleware JSON-pyyntöjen käsittelyyn
 app.use(express.json());
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT||10000;
 
 // Käyttäjänhallinnan reitit
 app.post(["/register", "/api/register"], registerUser);
