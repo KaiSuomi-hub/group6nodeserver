@@ -138,6 +138,7 @@ const joinRoom = (roomID, username) => {
 // Funktio huoneiden listaamiseen
 const getRooms = () => {
     const data = readData(); // Lataa tiedot
+    console.log("Rooms data:", JSON.stringify(data.rooms, null, 2));
     return data.rooms;  // Palautetaan huoneet
 };
 
