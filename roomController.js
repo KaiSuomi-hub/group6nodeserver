@@ -34,6 +34,7 @@ const createRoom = async (req, res) => {
 const listRooms = async (req, res) => {
     try {
         const data = readData(); // Lataa nykyinen data
+        console.log("Rooms data:", JSON.stringify(data.rooms, null, 2));
         return res.status(200).json({ rooms: data.rooms || [] }); // Palautetaan huoneet oikeassa muodossa
     } catch (error) {
         console.error('Error fetching rooms:', error);
