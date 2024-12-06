@@ -41,8 +41,10 @@ app.post(["/register", "/api/register"], registerUser);
 app.post(["/login", "/api/login"], loginUser);
 
 // Huoneenhallinnan reitit
-app.post("/create-room", createRoom);
-app.get("/rooms", listRooms);  // Reitti huoneiden listaamiseen
+app.post(["/create-room", "/api/create-room"], createRoom);
+
+// Reitti huoneiden listaamiseen
+app.get(["/rooms", "/api/rooms"], listRooms);
 
 // Socket.IO Signaling WebRTC
 const rooms = {};
